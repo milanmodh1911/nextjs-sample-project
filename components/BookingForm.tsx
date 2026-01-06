@@ -1,29 +1,172 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { MapPin, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { MapPin, ArrowRight, Search, ChevronDown, X } from 'lucide-react';
 import { SERVICE_TYPES, getBookingUrl, SITE_CONFIG } from '@/lib/constants';
-
-// Popular cities - loaded instantly, API fetches more in background
-const POPULAR_CITIES = [
-  'Ahmedabad', 'Mumbai', 'Pune', 'Delhi', 'Bangalore', 'Surat', 
-  'Vadodara', 'Jaipur', 'Chennai', 'Hyderabad', 'Indore', 'Bhopal',
-  'Nashik', 'Nagpur', 'Rajkot', 'Udaipur', 'Chandigarh', 'Lucknow'
-];
 
 interface City {
   cityName: string;
+}
+
+// Searchable City Dropdown Component
+function CityDropdown({
+  label,
+  value,
+  onChange,
+  cities,
+  isLoading,
+  disabled,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (city: string) => void;
+  cities: City[];
+  isLoading: boolean;
+  disabled?: boolean;
+  placeholder: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Filter cities based on search
+  const filteredCities = cities.filter((city) =>
+    city.cityName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSearch('');
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Focus input when dropdown opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleSelect = (cityName: string) => {
+    onChange(cityName);
+    setIsOpen(false);
+    setSearch('');
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange('');
+    setSearch('');
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        <MapPin className="w-4 h-4 inline mr-1 text-primary" />
+        {label}
+      </label>
+      
+      {/* Selected Value / Trigger */}
+      <button
+        type="button"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`select-field w-full text-left flex items-center justify-between ${
+          disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer'
+        }`}
+      >
+        <span className={value ? 'text-gray-900' : 'text-gray-500'}>
+          {isLoading ? 'Loading cities...' : value || placeholder}
+        </span>
+        <div className="flex items-center gap-1">
+          {value && !disabled && (
+            <X 
+              className="w-4 h-4 text-gray-400 hover:text-gray-600" 
+              onClick={handleClear}
+            />
+          )}
+          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </div>
+      </button>
+
+      {/* Dropdown */}
+      {isOpen && !disabled && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-hidden">
+          {/* Search Input */}
+          <div className="p-2 border-b border-gray-100">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search city..."
+                className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+          {/* City List */}
+          <div className="max-h-52 overflow-y-auto">
+            {filteredCities.length === 0 ? (
+              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                {search ? 'No cities found' : 'No cities available'}
+              </div>
+            ) : (
+              filteredCities.map((city) => (
+                <button
+                  key={city.cityName}
+                  type="button"
+                  onClick={() => handleSelect(city.cityName)}
+                  className={`w-full px-4 py-2.5 text-left text-sm hover:bg-primary-50 transition-colors ${
+                    value === city.cityName ? 'bg-primary-50 text-primary font-medium' : 'text-gray-700'
+                  }`}
+                >
+                  {city.cityName}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function BookingForm() {
   const [activeService, setActiveService] = useState('oneway');
   const [pickupCity, setPickupCity] = useState('');
   const [dropCity, setDropCity] = useState('');
-  const [pickupCities, setPickupCities] = useState<City[]>(
-    POPULAR_CITIES.map(name => ({ cityName: name }))
-  );
+  const [pickupCities, setPickupCities] = useState<City[]>([]);
   const [dropCities, setDropCities] = useState<City[]>([]);
+  const [isLoadingPickup, setIsLoadingPickup] = useState(true);
   const [isLoadingDrop, setIsLoadingDrop] = useState(false);
+
+  // Fetch pickup cities on mount
+  useEffect(() => {
+    async function fetchPickupCities() {
+      setIsLoadingPickup(true);
+      try {
+        const response = await fetch('/api/cities/pickup');
+        const data = await response.json();
+        setPickupCities(data.cities || []);
+      } catch (error) {
+        console.error('Error fetching pickup cities:', error);
+        setPickupCities([]);
+      }
+      setIsLoadingPickup(false);
+    }
+    fetchPickupCities();
+  }, []);
 
   // Fetch drop cities when pickup city changes
   useEffect(() => {
@@ -37,34 +180,12 @@ export default function BookingForm() {
       setDropCity('');
       
       try {
-        // Get access key
-        const accessResponse = await fetch('https://api.oneway.cab/third/getAccessKey', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            companyName: 'Web',
-            clientID: 'webapp', 
-            clientSecret: 'XTdI790c598u21C'
-          }),
-        });
-        const accessData = await accessResponse.json();
-        
-        // Get drop cities
-        const citiesResponse = await fetch('https://api.oneway.cab/third/getOnewayDropCityList', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pickupCityName: pickupCity,
-            userName: 'Web',
-            accessKey: accessData.accessKey,
-          }),
-        });
-        const citiesData = await citiesResponse.json();
-        setDropCities(citiesData['City Name'] || []);
+        const response = await fetch(`/api/cities/drop?from=${encodeURIComponent(pickupCity)}`);
+        const data = await response.json();
+        setDropCities(data.cities || []);
       } catch (error) {
         console.error('Error fetching drop cities:', error);
-        // Fallback to popular cities
-        setDropCities(POPULAR_CITIES.filter(c => c !== pickupCity).map(name => ({ cityName: name })));
+        setDropCities([]);
       }
       
       setIsLoadingDrop(false);
@@ -116,49 +237,27 @@ export default function BookingForm() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           {/* Pickup City */}
           <div className="md:col-span-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <MapPin className="w-4 h-4 inline mr-1 text-primary" />
-              Pick-up City
-            </label>
-            <select
+            <CityDropdown
+              label="Pick-up City"
               value={pickupCity}
-              onChange={(e) => setPickupCity(e.target.value)}
-              className="select-field"
-            >
-              <option value="">Select Pick Up City</option>
-              {pickupCities.map((city) => (
-                <option key={city.cityName} value={city.cityName}>
-                  {city.cityName}
-                </option>
-              ))}
-            </select>
+              onChange={setPickupCity}
+              cities={pickupCities}
+              isLoading={isLoadingPickup}
+              placeholder="Select Pick Up City"
+            />
           </div>
 
           {/* Drop City */}
           <div className="md:col-span-5">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              <MapPin className="w-4 h-4 inline mr-1 text-primary" />
-              Drop City
-            </label>
-            <select
+            <CityDropdown
+              label="Drop City"
               value={dropCity}
-              onChange={(e) => setDropCity(e.target.value)}
-              className="select-field"
-              disabled={!pickupCity || isLoadingDrop}
-            >
-              <option value="">
-                {!pickupCity
-                  ? 'Select pickup city first'
-                  : isLoadingDrop
-                  ? 'Loading cities...'
-                  : 'Select Drop City'}
-              </option>
-              {dropCities.map((city) => (
-                <option key={city.cityName} value={city.cityName}>
-                  {city.cityName}
-                </option>
-              ))}
-            </select>
+              onChange={setDropCity}
+              cities={dropCities}
+              isLoading={isLoadingDrop}
+              disabled={!pickupCity}
+              placeholder={pickupCity ? 'Select Drop City' : 'Select pickup city first'}
+            />
           </div>
 
           {/* Check Fare Button */}
@@ -166,7 +265,7 @@ export default function BookingForm() {
             <button
               onClick={handleCheckFare}
               disabled={!pickupCity || !dropCity}
-              className="btn-primary w-full flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full h-[46px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Check Fare</span>
               <ArrowRight className="w-4 h-4" />
