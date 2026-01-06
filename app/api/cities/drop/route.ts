@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_BASE = 'https://api.oneway.cab/third';
+const API_BASE = 'https://webapi.oneway.cab/third';
 const CREDENTIALS = {
   companyName: 'Web',
   clientID: 'webapp',
