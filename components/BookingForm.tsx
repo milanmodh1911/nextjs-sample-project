@@ -99,7 +99,7 @@ function CityDropdown({
 
       {/* Dropdown */}
       {isOpen && !disabled && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-hidden">
+        <div className="absolute z-[9999] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-72 overflow-hidden" style={{ top: '100%' }}>
           {/* Search Input */}
           <div className="p-2 border-b border-gray-100">
             <div className="relative">
@@ -214,9 +214,9 @@ export default function BookingForm() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-card overflow-hidden">
+    <div className="bg-white rounded-xl shadow-card">
       {/* Service Tabs */}
-      <div className="flex flex-wrap bg-gray-500">
+      <div className="flex flex-wrap bg-gray-500 rounded-t-xl">
         {SERVICE_TYPES.map((service) => (
           <button
             key={service.id}
