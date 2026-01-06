@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans text-gray-800 antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  /* Primary Button */
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-medium
+           transition-all duration-300 ease-out
+           hover:bg-primary-600 hover:shadow-button
+           active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Accent Button */
+  .btn-accent {
+    @apply bg-accent text-primary-700 px-6 py-3 rounded-lg font-semibold
+           transition-all duration-300 ease-out
+           hover:bg-accent-300 hover:shadow-lg
+           active:scale-95;
+  }
+
+  /* Outline Button */
+  .btn-outline {
+    @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium
+           transition-all duration-300 ease-out
+           hover:bg-primary hover:text-white
+           active:scale-95;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-xl shadow-card p-6
+           transition-all duration-300 ease-out
+           hover:shadow-card-hover;
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300
+           focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+           transition-all duration-200;
+  }
+
+  /* Select Field */
+  .select-field {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 bg-white
+           focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+           transition-all duration-200
+           appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  /* Service Tab */
+  .service-tab {
+    @apply px-4 py-2 rounded-t-lg font-medium text-sm
+           transition-all duration-200 ease-out;
+  }
+
+  .service-tab-active {
+    @apply bg-accent text-primary-700;
+  }
+
+  .service-tab-inactive {
+    @apply bg-gray-500 text-white hover:bg-gray-400;
+  }
+
+  /* Feature Card */
+  .feature-card {
+    @apply p-6 text-center;
+  }
+
+  .feature-icon {
+    @apply w-16 h-16 mx-auto mb-4 rounded-full 
+           flex items-center justify-center
+           border-2 border-primary text-primary
+           transition-all duration-300
+           group-hover:bg-primary group-hover:text-white;
+  }
+
+  /* Navigation Link */
+  .nav-link {
+    @apply px-4 py-2 text-gray-700 font-medium
+           transition-all duration-200
+           hover:text-primary;
+  }
+
+  .nav-link-active {
+    @apply text-primary border-b-2 border-primary;
+  }
+
+  /* Footer Link */
+  .footer-link {
+    @apply text-gray-600 hover:text-primary transition-colors duration-200;
+  }
+
+  /* Social Icon */
+  .social-icon {
+    @apply w-10 h-10 rounded-full flex items-center justify-center
+           bg-primary text-white
+           transition-all duration-300
+           hover:bg-primary-600 hover:scale-110;
+  }
+}
+
+@layer utilities {
+  /* Gradient Background */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-r from-primary to-primary-600;
+  }
+
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-700;
+  }
+
+  /* Container Max Width */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #008bd2;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #006fa8;
+}
