@@ -21,7 +21,7 @@ export async function GET() {
   try {
     const accessKey = await getAccessKey();
     
-    const response = await fetch(`${API_BASE}/getOnewayPickupCityList`, {
+    const response = await fetch(`${API_BASE}/getPickupCityListPriority`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

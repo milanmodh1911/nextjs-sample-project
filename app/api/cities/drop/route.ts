@@ -28,11 +28,11 @@ export async function GET(request: Request) {
 
     const accessKey = await getAccessKey();
     
-    const response = await fetch(`${API_BASE}/getOnewayDropCityList`, {
+    const response = await fetch(`${API_BASE}/getDropCityListNew`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        pickupCityName: pickupCity,
+        cityName: pickupCity,
         userName: 'Web',
         accessKey,
       }),
