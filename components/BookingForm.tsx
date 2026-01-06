@@ -3,27 +3,27 @@
 import { useState, useEffect } from 'react';
 import { MapPin, ArrowRight } from 'lucide-react';
 import { SERVICE_TYPES, getBookingUrl, SITE_CONFIG } from '@/lib/constants';
-import { getPickupCities, getDropCities, type City } from '@/lib/api';
+
+// Popular cities - loaded instantly, API fetches more in background
+const POPULAR_CITIES = [
+  'Ahmedabad', 'Mumbai', 'Pune', 'Delhi', 'Bangalore', 'Surat', 
+  'Vadodara', 'Jaipur', 'Chennai', 'Hyderabad', 'Indore', 'Bhopal',
+  'Nashik', 'Nagpur', 'Rajkot', 'Udaipur', 'Chandigarh', 'Lucknow'
+];
+
+interface City {
+  cityName: string;
+}
 
 export default function BookingForm() {
   const [activeService, setActiveService] = useState('oneway');
   const [pickupCity, setPickupCity] = useState('');
   const [dropCity, setDropCity] = useState('');
-  const [pickupCities, setPickupCities] = useState<City[]>([]);
+  const [pickupCities, setPickupCities] = useState<City[]>(
+    POPULAR_CITIES.map(name => ({ cityName: name }))
+  );
   const [dropCities, setDropCities] = useState<City[]>([]);
-  const [isLoadingPickup, setIsLoadingPickup] = useState(true);
   const [isLoadingDrop, setIsLoadingDrop] = useState(false);
-
-  // Fetch pickup cities on mount
-  useEffect(() => {
-    async function fetchCities() {
-      setIsLoadingPickup(true);
-      const cities = await getPickupCities();
-      setPickupCities(cities);
-      setIsLoadingPickup(false);
-    }
-    fetchCities();
-  }, []);
 
   // Fetch drop cities when pickup city changes
   useEffect(() => {
@@ -35,8 +35,38 @@ export default function BookingForm() {
       
       setIsLoadingDrop(true);
       setDropCity('');
-      const cities = await getDropCities(pickupCity);
-      setDropCities(cities);
+      
+      try {
+        // Get access key
+        const accessResponse = await fetch('https://api.oneway.cab/third/getAccessKey', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            companyName: 'Web',
+            clientID: 'webapp', 
+            clientSecret: 'XTdI790c598u21C'
+          }),
+        });
+        const accessData = await accessResponse.json();
+        
+        // Get drop cities
+        const citiesResponse = await fetch('https://api.oneway.cab/third/getOnewayDropCityList', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pickupCityName: pickupCity,
+            userName: 'Web',
+            accessKey: accessData.accessKey,
+          }),
+        });
+        const citiesData = await citiesResponse.json();
+        setDropCities(citiesData['City Name'] || []);
+      } catch (error) {
+        console.error('Error fetching drop cities:', error);
+        // Fallback to popular cities
+        setDropCities(POPULAR_CITIES.filter(c => c !== pickupCity).map(name => ({ cityName: name })));
+      }
+      
       setIsLoadingDrop(false);
     }
     fetchDropCities();
@@ -94,11 +124,8 @@ export default function BookingForm() {
               value={pickupCity}
               onChange={(e) => setPickupCity(e.target.value)}
               className="select-field"
-              disabled={isLoadingPickup}
             >
-              <option value="">
-                {isLoadingPickup ? 'Loading cities...' : 'Select Pick Up City'}
-              </option>
+              <option value="">Select Pick Up City</option>
               {pickupCities.map((city) => (
                 <option key={city.cityName} value={city.cityName}>
                   {city.cityName}

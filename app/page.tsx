@@ -1,8 +1,14 @@
+'use client';
+
 import BookingForm from '@/components/BookingForm';
 import FeatureCards from '@/components/FeatureCards';
 import AppStoreButtons from '@/components/AppStoreButtons';
 
 export default function HomePage() {
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
       {/* Hero Section with Booking Form */}
@@ -65,7 +71,7 @@ export default function HomePage() {
                 No Charges for Extra KMs
               </h3>
               <p className="text-gray-600 text-sm">
-                Remove your eyes off Odometer as we don't charge by KMs.
+                Remove your eyes off Odometer as we don&apos;t charge by KMs.
               </p>
             </div>
 
@@ -80,7 +86,7 @@ export default function HomePage() {
                 Trusted by 65,000+ Customers
               </h3>
               <p className="text-gray-600 text-sm">
-                We are preferred cab provider for: GE, L&T, Radio Mirchi, Bajaj Allianz and others.
+                We are preferred cab provider for: GE, L&amp;T, Radio Mirchi, Bajaj Allianz and others.
               </p>
             </div>
 
@@ -95,7 +101,7 @@ export default function HomePage() {
                 No Cancellation Fees
               </h3>
               <p className="text-gray-600 text-sm">
-                We understand Plans change, that's why we do not charge any Cancellation Fees.
+                We understand Plans change, that&apos;s why we do not charge any Cancellation Fees.
               </p>
             </div>
           </div>
@@ -112,16 +118,12 @@ export default function HomePage() {
             Join 65,000+ happy customers who have saved money on their inter-city travel.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+            <button
+              onClick={scrollToTop}
               className="btn-accent px-8 py-4 text-lg"
             >
               Book Now
-            </a>
+            </button>
             <a href="tel:08000320320" className="btn-outline border-white text-white hover:bg-white hover:text-primary px-8 py-4 text-lg">
               Call 08000 320 320
             </a>
