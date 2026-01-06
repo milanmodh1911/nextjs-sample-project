@@ -3,7 +3,8 @@ export const SITE_CONFIG = {
   name: 'OneWay.Cab',
   tagline: "India's Leading OneWay Inter-City Cab Provider",
   description: "India's Leading One Way Inter-City Cab Service provider. Why pay for return journey, if you are traveling one-way.",
-  phone: '08000 320 320',
+  phone: '08000 247 247',
+  whatsapp: '8000 247 247',
   email: 'support@oneway.cab',
   url: 'https://oneway.cab',
   bookingUrl: 'https://book.oneway.cab',
@@ -31,8 +32,11 @@ export const NAV_LINKS = [
   { label: 'Book Cab', href: '/' },
   { label: 'Services', href: '/services' },
   { label: 'Routes', href: '/routes' },
-  { label: 'Testimonials', href: '/testimonials' },
+  { label: 'Fare', href: '/fare' },
+  { label: 'Corporate', href: '/corporate' },
+  { label: 'Reviews', href: '/testimonials' },
   { label: 'Help', href: 'https://onewaycab1.freshdesk.com', external: true },
+  { label: 'My Profile', href: 'https://book.oneway.cab/login', external: true },
 ];
 
 // Footer Links
@@ -74,8 +78,8 @@ export const SOCIAL_LINKS = [
 // Service Types
 export const SERVICE_TYPES = [
   { id: 'oneway', label: 'One Way Taxi', href: '/', active: true },
-  { id: 'local', label: 'Local Hourly Packages', href: '/car-rental' },
-  { id: 'outstation', label: 'Outstation', href: '/outstation' },
+  { id: 'local', label: 'Local', href: '/car-rental' },
+  { id: 'roundtrip', label: 'Round Trip', href: '/outstation' },
   { id: 'special', label: 'Special Package', href: '/special-package' },
 ];
 
@@ -88,13 +92,13 @@ export const USP_FEATURES = [
   },
   {
     icon: 'thumbs-up',
-    title: '90,000+ Trips Completed',
+    title: '2,50,000+ Trips Completed',
     description: '99% of our guest have never missed the flight. We take pride in our On-time performance.',
   },
   {
     icon: 'users',
-    title: '65,000+ Customers',
-    description: 'Over 65,000 have trusted us with their travel. We are preferred cab provider for: GE, L&T, Radio Mirchi, Bajaj Allianz and others.',
+    title: '98,000+ Customers',
+    description: 'Over 98,000+ customers trust us, including top companies like GE, L&T, Bajaj Allianz, etc. Our cabs meet high service standards.',
   },
 ];
 

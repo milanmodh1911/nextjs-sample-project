@@ -16,11 +16,12 @@ export default function FeatureCards() {
         return (
           <div
             key={feature.title}
-            className="group feature-card animate-slide-up"
+            className="group text-center p-6 animate-slide-up"
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className="feature-icon">
-              <IconComponent className="w-8 h-8" />
+            {/* Filled Blue Circle Icon */}
+            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <IconComponent className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-lg font-display font-semibold text-gray-800 mb-2">
               {feature.title}

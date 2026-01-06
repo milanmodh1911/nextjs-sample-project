@@ -215,21 +215,28 @@ export default function BookingForm() {
 
   return (
     <div className="bg-white rounded-xl shadow-card">
-      {/* Service Tabs */}
-      <div className="flex flex-wrap bg-gray-500 rounded-t-xl">
+      {/* Service Tabs - Pill Style */}
+      <div className="flex flex-wrap justify-center gap-2 p-4 bg-gray-50 rounded-t-xl">
         {SERVICE_TYPES.map((service) => (
           <button
             key={service.id}
             onClick={() => handleServiceClick(service.id, service.href)}
-            className={`service-tab flex-1 min-w-[120px] ${
+            className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
               activeService === service.id
-                ? 'service-tab-active'
-                : 'service-tab-inactive'
+                ? 'bg-accent text-gray-900 shadow-md'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400'
             }`}
           >
             {service.label}
           </button>
         ))}
+      </div>
+
+      {/* Tagline */}
+      <div className="text-center py-3 border-b border-gray-100">
+        <p className="text-gray-700 font-medium">
+          Taxi-Rental Service for One Way Inter-City Travel!
+        </p>
       </div>
 
       {/* Form */}
@@ -243,7 +250,7 @@ export default function BookingForm() {
               onChange={setPickupCity}
               cities={pickupCities}
               isLoading={isLoadingPickup}
-              placeholder="Select Pick Up City"
+              placeholder="Enter Pick-up City"
             />
           </div>
 
@@ -256,19 +263,18 @@ export default function BookingForm() {
               cities={dropCities}
               isLoading={isLoadingDrop}
               disabled={!pickupCity}
-              placeholder={pickupCity ? 'Select Drop City' : 'Select pickup city first'}
+              placeholder={pickupCity ? 'Enter Drop City' : 'Select pickup city first'}
             />
           </div>
 
-          {/* Check Fare Button */}
+          {/* Check Fare Button - Yellow */}
           <div className="md:col-span-2">
             <button
               onClick={handleCheckFare}
               disabled={!pickupCity || !dropCity}
-              className="btn-primary w-full h-[46px] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-[46px] flex items-center justify-center space-x-2 bg-accent hover:bg-accent-600 text-gray-900 font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Check Fare</span>
-              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
