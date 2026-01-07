@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { MapPin, Calendar, Clock, ChevronRight, DollarSign, Shield, Headphones, Ban, Plane, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, Clock, ChevronRight, DollarSign, Shield, Headphones, Ban } from 'lucide-react';
 import { SITE_CONFIG, getBookingUrl } from '@/lib/constants';
 
 // Helper function to format city name from slug
@@ -13,11 +13,6 @@ function formatCityName(slug: string): string {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-}
-
-// Helper function to create slug from city name
-function createSlug(cityName: string): string {
-  return cityName.toLowerCase().replace(/\s+/g, '-');
 }
 
 // Helper function to parse route slug
@@ -31,44 +26,6 @@ function parseRouteSlug(routeSlug: string): { from: string; to: string } | null 
     };
   }
   return null;
-}
-
-// Destination Card Component
-function DestinationCard({ 
-  fromCity, 
-  toCity, 
-  price = 'XXX',
-  featured = false 
-}: { 
-  fromCity: string; 
-  toCity: string; 
-  price?: string;
-  featured?: boolean;
-}) {
-  const fromSlug = createSlug(fromCity);
-  const toSlug = createSlug(toCity);
-  const routeUrl = `/${fromSlug}/${fromSlug}-to-${toSlug}-taxi`;
-
-  return (
-    <Link href={routeUrl} className="block">
-      <div className={`bg-gradient-to-br from-cyan-400/20 via-transparent to-amber-500/20 p-[2px] rounded-2xl hover:from-cyan-400/40 hover:to-amber-500/40 transition-all duration-300 ${featured ? 'col-span-1' : ''}`}>
-        <div className="bg-slate-900/95 backdrop-blur-sm rounded-2xl p-5 h-full">
-          <div className="text-gray-400 text-xs mb-1">FROM: {fromCity}</div>
-          <div className="text-white text-sm font-medium mb-3">TO: <span className="text-primary">{toCity}</span></div>
-          
-          <div className="text-white text-3xl font-bold mb-1">₹{price}</div>
-          <div className="text-gray-400 text-xs mb-4 flex items-center gap-1">
-            <span>Starting Price</span>
-            <Plane className="w-3 h-3" />
-          </div>
-          
-          <button className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 w-full flex items-center justify-center gap-2">
-            Book Now <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </Link>
-  );
 }
 
 // Benefits data
@@ -384,80 +341,79 @@ export default function RoutePage() {
         </div>
       </section>
 
-      {/* Other Destinations - Traveling TO section */}
-      <section className="py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Other Destinations */}
+      <section className="py-10 bg-white">
         <div className="container-custom">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <h2 className="text-white text-3xl md:text-4xl font-bold mb-4">
-              Traveling TO {to}?
-            </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Competitive one-way marketplace fares from neighboring hubs directly to your doorstep.
-            </p>
-          </div>
-
-          {/* Grid of destination cards */}
-          {isLoadingTo ? (
-            <div className="text-center text-gray-400 py-8">Loading destinations...</div>
-          ) : toDestinations.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {toDestinations.map((dest, index) => (
-                <DestinationCard
-                  key={index}
-                  fromCity={dest.cityName}
-                  toCity={to}
-                  price="XXX"
-                  featured={index === 0}
-                />
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* From City */}
+            <div className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold text-primary">
+                  Other Destination from {from}
+                </h3>
+              </div>
+              <div className="p-6">
+                {isLoadingFrom ? (
+                  <p className="text-gray-500">Loading...</p>
+                ) : fromDestinations.length > 0 ? (
+                  <ul className="space-y-2">
+                    {fromDestinations.slice(0, 5).map((dest, index) => (
+                      <li key={index}>
+                        <Link
+                          href={`/${fromSlug}/${fromSlug}-to-${dest.cityName.toLowerCase().replace(/\s+/g, '-')}-taxi`}
+                          className="text-primary hover:underline"
+                        >
+                          • {dest.cityName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No destinations available</p>
+                )}
+                <Link
+                  href={`/city/${fromSlug}`}
+                  className="text-primary hover:underline text-sm mt-4 inline-block"
+                >
+                  Check More..
+                </Link>
+              </div>
             </div>
-          ) : (
-            <div className="text-center text-gray-400 py-8">No other routes available</div>
-          )}
-        </div>
-      </section>
 
-      {/* Other Destinations - Traveling FROM section */}
-      <section className="py-12 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800">
-        <div className="container-custom">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <h2 className="text-white text-3xl md:text-4xl font-bold mb-4">
-              Traveling FROM {from}?
-            </h2>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Explore more destinations from {from} at affordable one-way fares.
-            </p>
-          </div>
-
-          {/* Grid of destination cards */}
-          {isLoadingFrom ? (
-            <div className="text-center text-gray-400 py-8">Loading destinations...</div>
-          ) : fromDestinations.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {fromDestinations.map((dest, index) => (
-                <DestinationCard
-                  key={index}
-                  fromCity={from}
-                  toCity={dest.cityName}
-                  price="XXX"
-                  featured={index === 0}
-                />
-              ))}
+            {/* To City */}
+            <div className="border rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold text-primary">
+                  Other Destination from {to}
+                </h3>
+              </div>
+              <div className="p-6">
+                {isLoadingTo ? (
+                  <p className="text-gray-500">Loading...</p>
+                ) : toDestinations.length > 0 ? (
+                  <ul className="space-y-2">
+                    {toDestinations.slice(0, 5).map((dest, index) => (
+                      <li key={index}>
+                        <Link
+                          href={`/${toSlug}/${toSlug}-to-${dest.cityName.toLowerCase().replace(/\s+/g, '-')}-taxi`}
+                          className="text-primary hover:underline"
+                        >
+                          • {dest.cityName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-500">No destinations available</p>
+                )}
+                <Link
+                  href={`/city/${toSlug}`}
+                  className="text-primary hover:underline text-sm mt-4 inline-block"
+                >
+                  Check More..
+                </Link>
+              </div>
             </div>
-          ) : (
-            <div className="text-center text-gray-400 py-8">No other routes available</div>
-          )}
-
-          {/* Check More Link */}
-          <div className="text-center mt-8">
-            <Link 
-              href={`/city/${fromSlug}`}
-              className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 font-medium transition-colors"
-            >
-              View all routes from {from} <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </section>
