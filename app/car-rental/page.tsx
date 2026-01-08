@@ -184,7 +184,7 @@ const CarRentalPage = () => {
             </p>
           </div> */}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8">
             {/* Pickup City */}
             <div className="relative">
               <label className="block text-sm font-medium text-gray-600 mb-2">
@@ -255,7 +255,7 @@ const CarRentalPage = () => {
 
           {/* Fare Details Display */}
           {showFareDetails && selectedPackage && (
-            <div className="mt-8">
+            <div className="gap-6 p-6 md:p-8 mb-8">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Available Cars for {getSelectedPackageData()?.subPackageName}
               </h3>
