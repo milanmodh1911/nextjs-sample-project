@@ -115,3 +115,115 @@ export async function getRouteDetails(fromCity: string, toCity: string): Promise
     return [];
   }
 }
+
+// ---------- Local Package Types ----------
+
+// City list (already compatible with City interface)
+export interface LocalPackageCity {
+  cityId: number;
+  cityName: string;
+  stateName?: string;
+  cityLatitude?: string;
+  cityLongitude?: string;
+  isDeleted?: number;
+  stateId?: number;
+}
+
+// Cars info
+export interface LocalPackageCar {
+  noOfBags: number;
+  noOfPersons: number;
+}
+
+export interface LocalPackageCars {
+  [carType: string]: LocalPackageCar;
+}
+
+// Fare details
+export interface LocalPackageFare {
+  fareId: number;
+  carType: string;
+  carTypeId: number;
+  baseFareAmount: number;
+  serviceTax: string;
+  gstAmount: number;
+  journeyHour: number;
+  journeyKilometer: number;
+  extraKilometerCharge: number;
+  extraHourCharge: number;
+  isAdvanceBookingAllow: number;
+}
+
+// Sub package
+export interface LocalSubPackage {
+  subPackageId: number;
+  subPackageName: string;
+  subPackageFare: LocalPackageFare[];
+}
+
+// Full detail response
+export interface LocalPackageDetailResponse {
+  cars: LocalPackageCars;
+  packageList: LocalSubPackage[];
+}
+
+// Get Local Package Cities
+export async function getLocalPackageCities(): Promise<LocalPackageCity[]> {
+  try {
+    const accessKey = await getAccessKey();
+
+    const response = await fetch(
+      `${API_CONFIG.baseUrl}/webLocalPackageList`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userName: 'Web',
+          accessKey,
+        }),
+      }
+    );
+
+    const data = await response.json();
+    return data.cityList || [];
+
+  } catch (error) {
+    console.error('Error fetching local package cities:', error);
+    return [];
+  }
+}
+
+// Get Local Package Details by City
+export async function getLocalPackageDetails(
+  cityName: string
+): Promise<LocalPackageDetailResponse | null> {
+  try {
+    const accessKey = await getAccessKey();
+
+    const response = await fetch(
+      `${API_CONFIG.baseUrl}/webLocalPackageListDetail`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userName: 'Web',
+          accessKey,
+          cityName,
+        }),
+      }
+    );
+
+    const data: LocalPackageDetailResponse = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error('Error fetching local package details:', error);
+    return null;
+  }
+}
+
+

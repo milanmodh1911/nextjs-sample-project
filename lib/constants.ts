@@ -1,24 +1,30 @@
-// Site Configuration
 export const SITE_CONFIG = {
   name: 'OneWay.Cab',
   tagline: "India's Leading OneWay Inter-City Cab Provider",
-  description: "India's Leading One Way Inter-City Cab Service provider. Why pay for return journey, if you are traveling one-way.",
+  description:
+    "India's Leading One Way Inter-City Cab Service provider. Why pay for return journey, if you are traveling one-way.",
   phone: '08000 247 247',
   whatsapp: '8000 247 247',
   email: 'support@oneway.cab',
-  url: 'https://oneway.cab',
-  bookingUrl: 'https://book.oneway.cab',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://oneway.cab',
+  bookingUrl:
+    process.env.NEXT_PUBLIC_BOOKING_URL || 'https://book.oneway.cab',
 };
 
-// API Configuration
+// =======================
+// API Configuration (SERVER ONLY)
+// =======================
+
 export const API_CONFIG = {
-  baseUrl: 'https://api.oneway.cab/third',
+  baseUrl: process.env.API_BASE_URL!, // NOT public
+
   credentials: {
-    companyName: 'Web',
-    clientID: 'webapp',
-    clientSecret: 'XTdI790c598u21C',
+    companyName: process.env.API_COMPANY_NAME!,
+    clientID: process.env.API_CLIENT_ID!,
+    clientSecret: process.env.API_CLIENT_SECRET!,
   },
 };
+
 
 // Booking URL Generator
 export const getBookingUrl = (from: string, to: string) => {
