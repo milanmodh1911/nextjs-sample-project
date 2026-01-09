@@ -396,6 +396,7 @@ const CarRentalPage = () => {
           <p className="text-gray-900 font-semibold mb-4">
             Last thing you want to worry among your busy schedule is Car Rental!
           </p>
+          
 
           <p className="text-gray-700">
             You can also book via Android as well as iPhone app.
