@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { SERVICE_TYPES, getBookingUrl, SITE_CONFIG } from '@/lib/constants';
 import ServiceTabsWithTagline from '@/components/ServiceTabsWithTagline';
+import SearchableSelect from '@/components/SearchableSelect';
 
 interface City {
   cityId: number;
@@ -40,7 +41,8 @@ interface Package {
 
 const CarRentalPage = () => {
   const [activeService, setActiveService] = useState('local');
-  const [pickupCity, setPickupCity] = useState('');
+  //const [pickupCity, setPickupCity] = useState('');
+  const [pickupCity, setPickupCity] = useState<number | ''>('');
   const [selectedPackage, setSelectedPackage] = useState<number | ''>('');
   const [selectedCarType, setSelectedCarType] = useState('');
   const [cities, setCities] = useState<City[]>([]);
@@ -54,11 +56,27 @@ const CarRentalPage = () => {
     fetchCities();
   }, []);
 
+  // useEffect(() => {
+  //   if (pickupCity) {
+  //     const selectedCity = cities.find(c => c.cityId.toString() === pickupCity);
+  //     if (selectedCity) {
+  //       fetchPackages(selectedCity.cityName);
+  //     }
+  //   } else {
+  //     setPackages([]);
+  //     setCars({});
+  //     setSelectedPackage('');
+  //     setSelectedCarType('');
+  //     setShowFareDetails(false);
+  //   }
+  // }, [pickupCity]);
+
   useEffect(() => {
     if (pickupCity) {
-      const selectedCity = cities.find(c => c.cityId.toString() === pickupCity);
+      const selectedCity = cities.find(c => c.cityId === pickupCity);
+
       if (selectedCity) {
-        fetchPackages(selectedCity.cityName);
+        fetchPackages(selectedCity.cityName); // or cityId if API allows
       }
     } else {
       setPackages([]);
@@ -67,7 +85,8 @@ const CarRentalPage = () => {
       setSelectedCarType('');
       setShowFareDetails(false);
     }
-  }, [pickupCity]);
+  }, [pickupCity, cities]);
+
 
   const fetchCities = async () => {
     try {
@@ -187,6 +206,8 @@ const CarRentalPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 md:p-8">
             {/* Pickup City */}
             <div className="relative">
+
+              {/*
               <label className="block text-sm font-medium text-gray-600 mb-2">
                 PICKUP
               </label>
@@ -205,12 +226,31 @@ const CarRentalPage = () => {
                     {city.cityName} - {city.stateName}
                   </option>
                 ))}
-              </select>
+              </select> */}
+
+              <SearchableSelect
+                label="PICKUP"
+                value={pickupCity}
+                disabled={loading}
+                placeholder="Select Pick-up City"
+                onChange={(val) => {
+                  setPickupCity(Number(val));   // 👈 IMPORTANT
+                  setSelectedPackage('');
+                  setPackages([]);
+                  setShowFareDetails(false);
+                }}
+                options={cities.map((city) => ({
+                  value: city.cityId,
+                  label: `${city.cityName} - ${city.stateName}`,
+                }))}
+              />
+
             </div>
 
             {/* Package Selection */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-600 mb-2">
+
+              {/* <label className="block text-sm font-medium text-gray-600 mb-2">
                 PACKAGE
               </label>
               <select
@@ -229,7 +269,24 @@ const CarRentalPage = () => {
                     {pkg.subPackageName}
                   </option>
                 ))}
-              </select>
+              </select> */}
+
+              <SearchableSelect
+                label="PACKAGE"
+                value={selectedPackage}
+                disabled={loading || !pickupCity}
+                placeholder="Select Package"
+                onChange={(val) => {
+                  setSelectedPackage(val ? Number(val) : '');
+                  setSelectedCarType('');
+                  setShowFareDetails(false);
+                }}
+                options={packages.map((pkg) => ({
+                  value: pkg.subPackageId,
+                  label: pkg.subPackageName,
+                }))}
+              />
+
             </div>
 
             {/* Check Fare Button */}
@@ -396,7 +453,7 @@ const CarRentalPage = () => {
           <p className="text-gray-900 font-semibold mb-4">
             Last thing you want to worry among your busy schedule is Car Rental!
           </p>
-          
+
 
           <p className="text-gray-700">
             You can also book via Android as well as iPhone app.
